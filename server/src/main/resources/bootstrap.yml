@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: order
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: CONFIG
+      profile: dev
+      #uri: http://localhost:8080
+    stream:
+      bindings:
+        input:
+          destination: myMessage
+          group: order
+          content-type: application/json
+        output:
+          destination: myMessage
+          group: order
+          content-type: application/json
+        input2:
+          destination: myMessage2
+        output2:
+          destination: myMessage2
+# zipkin配置
+# 解决zipkin连不上服务的情况
+  zipkin:
+    base-url: http://localhost:9411/
+    sender:
+      type: web
+# 抽样百分比发送到外部服务器的数据量
+  sleuth:
+    sampler:
+      probability: 1
+server:
+  port: 8085
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8762/eureka/
+#hystrix:
+#  command:
+##    # 方法名
+##    default:
+##      execution:
+##        isolation:
+##          thread:
+##            timeoutInMilliseconds: 3000
+#    getProductInfoList:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 3000
+#      circuitBreaker:
+#        enabled: true
+#        requestVolumeThreshold: 10
+#        sleepWindowInMilliseconds: 10000
+#        errorThresholdPercentage: 60
+#feign:
+#  hystrix:
+#    enabled: true
+# 配置feign超时的问题
+# 可以替代熔断器的配置
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+logging:
+  level:
+    org.springframework.cloud.openfeign: debug
